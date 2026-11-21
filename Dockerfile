@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=apache/apisix:3.19.0-debian
+ARG BASE_IMAGE=apache/apisix:3.21.0-debian
 
 FROM ${BASE_IMAGE} AS geoip2-builder
 

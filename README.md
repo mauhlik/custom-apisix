@@ -1,6 +1,6 @@
 # custom-apisix
 
-This image extends Apache APISIX 3.19.0 (Debian) with:
+This image extends Apache APISIX 3.21.0 (Debian) with:
 
 - MaxMind DB runtime tools (`libmaxminddb0`, `mmdb-bin`),
 - a dynamically built GeoIP2 module compatible with the image OpenResty runtime.
@@ -19,9 +19,9 @@ host paths).
 Build it locally with:
 
 ```sh
-docker build -t custom-apisix:3.19.0 .
+docker build -t custom-apisix:3.21.0 .
 ```
 
 To publish to Docker Hub, create the `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
-repository secrets. Push a version tag such as `v3.19.0` to publish
-`<DOCKERHUB_USERNAME>/custom-apisix:3.19.0`.
+repository secrets. Push a version tag such as `v3.21.0` to publish
+`<DOCKERHUB_USERNAME>/custom-apisix:3.21.0`.

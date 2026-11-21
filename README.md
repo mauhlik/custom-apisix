@@ -5,6 +5,9 @@ This image extends Apache APISIX 3.21.0 (Debian) with:
 - MaxMind DB runtime tools (`libmaxminddb0`, `mmdb-bin`),
 - a dynamically built GeoIP2 module compatible with the image OpenResty runtime.
 
+APISIX Runtime 1.4.3 uses the NGINX 1.31.9 core in its OpenResty 1.31.8.1
+build. The module is compiled against that NGINX core version.
+
 The build validates module loading as the non-root `apisix` user. Legacy
 `libgeoip` packages are not needed for `.mmdb` databases.
 

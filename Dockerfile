@@ -5,6 +5,9 @@ FROM ${BASE_IMAGE} AS geoip2-builder
 USER root
 
 ARG GEOIP2_MODULE_REF=cbaa35461c62a99d2577e6bae3273492502d8769
+# APISIX Runtime 1.4.3 pairs OpenResty 1.31.8.1 with the NGINX 1.31.9 core.
+ARG NGINX_SOURCE_VERSION=1.31.9
+ARG NGINX_SOURCE_COMMIT=c2c44702c2fbc572e4cfb0a52331061d7fcaca16
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -18,20 +21,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
-    OPENRESTY_VERSION="$(openresty -v 2>&1 | sed -n 's|.*openresty/\([^ ]*\).*|\1|p')"; \
-    test -n "${OPENRESTY_VERSION}"; \
     mkdir -p /tmp/geoip2-build; \
     git clone https://github.com/leev/ngx_http_geoip2_module.git /tmp/geoip2-build/ngx_http_geoip2_module; \
     cd /tmp/geoip2-build/ngx_http_geoip2_module; \
     git checkout -q "${GEOIP2_MODULE_REF}"; \
     cd /tmp/geoip2-build; \
-    wget -O "openresty-${OPENRESTY_VERSION}.tar.gz" "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz"; \
-    tar -xzf "openresty-${OPENRESTY_VERSION}.tar.gz"; \
-    cd "openresty-${OPENRESTY_VERSION}"; \
-    NGINX_SRC_DIR="$(find bundle -mindepth 1 -maxdepth 1 -type d -name 'nginx-*' -print -quit)"; \
-    test -n "${NGINX_SRC_DIR}"; \
-    cd "${NGINX_SRC_DIR}"; \
-    ./configure --with-compat --add-dynamic-module=/tmp/geoip2-build/ngx_http_geoip2_module; \
+    git clone --depth 1 --branch "release-${NGINX_SOURCE_VERSION}" https://github.com/nginx/nginx.git "nginx-${NGINX_SOURCE_VERSION}"; \
+    test "$(git -C "nginx-${NGINX_SOURCE_VERSION}" rev-parse HEAD)" = "${NGINX_SOURCE_COMMIT}"; \
+    cd "nginx-${NGINX_SOURCE_VERSION}"; \
+    auto/configure --with-compat --add-dynamic-module=/tmp/geoip2-build/ngx_http_geoip2_module; \
     make -j"$(nproc)" modules; \
     MODULE_SO_PATH="$(find objs -type f -name ngx_http_geoip2_module.so -print -quit)"; \
     test -n "${MODULE_SO_PATH}"; \
